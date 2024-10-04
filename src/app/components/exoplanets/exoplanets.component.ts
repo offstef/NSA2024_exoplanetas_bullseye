@@ -1,12 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-
-interface ExoplanetData {
-  kepler_name: string,
-  koi_disposition: string;
-  koi_period: number;
-  koi_prad: number;
-}
+import { ExoplanetsService, ExoplanetData } from '../../servicios/exoplanets.service';
 
 @Component({
   selector: 'app-exoplanets',
@@ -18,27 +11,22 @@ export class ExoplanetsComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
 
-  constructor(private http: HttpClient) { }
+  constructor(private exoplanetsService: ExoplanetsService) { }
 
   ngOnInit(): void {
     this.fetchData();
   }
 
   fetchData(): void {
-    this.http
-      .get<ExoplanetData[]>(
-        'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CONFIRMED%27&format=json'
-      )
-      .subscribe({
-        next: (response) => {
-          this.data = response;
-          console.log(this.data)
-          this.loading = false;
-        },
-        error: () => {
-          this.error = 'Error fetching data';
-          this.loading = false;
-        },
-      });
+    this.exoplanetsService.fetchData().subscribe({
+      next: (response) => {
+        this.data = response;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Error fetching data';
+        this.loading = false;
+      },
+    });
   }
 }
