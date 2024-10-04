@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 interface ExoplanetData {
+  kepler_name: string,
   koi_disposition: string;
   koi_period: number;
   koi_prad: number;
@@ -26,11 +27,12 @@ export class ExoplanetsComponent implements OnInit {
   fetchData(): void {
     this.http
       .get<ExoplanetData[]>(
-        'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CANDIDATE%27%20and%20koi_period%3E300%20and%20koi_prad%3C2&format=json'
+        'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CONFIRMED%27&format=json'
       )
       .subscribe({
         next: (response) => {
           this.data = response;
+          console.log(this.data)
           this.loading = false;
         },
         error: () => {
