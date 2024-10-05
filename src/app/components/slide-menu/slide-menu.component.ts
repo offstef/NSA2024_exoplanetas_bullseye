@@ -11,24 +11,24 @@ export class SlideMenuComponent {
   exoplanetID: any;
   exosplanetSmass: any;
   exosplanetTime0: any;
-  exosplanetEccen:any;
-  exosplanetLongp:any;
-  exosplanetImpact:any;
-  exosplanetDuration:any;
-  exosplanetDepth:any;
+  exosplanetEccen: any;
+  exosplanetLongp: any;
+  exosplanetImpact: any;
+  exosplanetDuration: any;
+  exosplanetDepth: any;
 
   constructor(private exoclickService: ExoclickService) { }
-  
+
   ngOnInit(): void {
     this.exoclickService.exoplanetClicked$.subscribe((exoplanet) => {
       this.openModal(exoplanet);
     });
   }
-  
+
   showMenu: boolean = false;
   @ViewChild('modal', { static: true }) modal!: ElementRef;
-  
-  closeModal(){
+
+  closeModal() {
     this.showMenu = false;
   }
 

@@ -20,7 +20,7 @@ interface Exoplaneta {
 })
 export class BarraBusquedaComponent {
   data: ExoplanetData[] = [];
-  showInput: boolean = false; // Variable para controlar la visibilidad del input
+  showInput: boolean = false;
   searchTerm: string = '';
   filteredExoplanetas: Exoplaneta[] = [];
 
@@ -34,8 +34,7 @@ export class BarraBusquedaComponent {
     this.exoplanetsService.fetchData().subscribe({
       next: (response) => {
         this.data = response;
-        // Inicializa filteredExoplanetas aquí si es necesario
-        this.filteredExoplanetas = this.data; // Puedes inicializarlo si lo necesitas
+        this.filteredExoplanetas = this.data;
       },
       error: () => {
         console.error('Error fetching data');
@@ -44,11 +43,19 @@ export class BarraBusquedaComponent {
   }
 
   toggleInput() {
-    this.showInput = !this.showInput; // Alterna la visibilidad
+    this.showInput = !this.showInput;
+    if (!this.showInput) {
+      this.onSearch();
+    }
   }
 
   onSearch() {
     console.log(this.searchTerm);
+
+    if (this.searchTerm.trim() === '') {
+      console.log('Término de búsqueda vacío');
+      return;
+    }
 
     const index = this.data.findIndex(exoplanet =>
       exoplanet.kepler_name.toLowerCase().includes(this.searchTerm.toLowerCase())
@@ -74,9 +81,7 @@ export class BarraBusquedaComponent {
       console.log(`Coordenadas cartesianas: x=${x}, y=${y}, z=${z}`);
 
       this.exoplanetsService.selectExoplanet(exoplanet);
-
       this.exoclickService.notifyExoplanetClicked(exoplanet);
-
     } else {
       console.log('Exoplaneta no encontrado');
     }
