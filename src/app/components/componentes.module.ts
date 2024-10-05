@@ -18,9 +18,10 @@ import { ExoplanetSphereComponent } from './exoplanet-sphere/exoplanet-sphere.co
         HttpClientModule,
         FormsModule
     ],
-    exports: [
-        ExoplanetsComponent,
-        BarraBusquedaComponent
-    ]
+  exports: [
+    ExoplanetsComponent,
+    BarraBusquedaComponent,
+    ExoplanetSphereComponent
+  ]
 })
 export class ComponentsModule { }

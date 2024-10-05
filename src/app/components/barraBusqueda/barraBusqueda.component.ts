@@ -10,8 +10,6 @@ interface Exoplaneta{
   templateUrl: './barraBusqueda.component.html',
   styleUrls: ['./barraBusqueda.component.scss'],
 })
-
-
 export class BarraBusquedaComponent {
   exoplaneta={
     nombre:"Nombre",
