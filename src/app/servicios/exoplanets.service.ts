@@ -7,6 +7,7 @@ export interface ExoplanetData {
   kepler_name: string;
   koi_disposition: string;
   koi_period: number;
+  koi_smass: number,
   koi_prad: number;
   ra: number;
   dec: number;
@@ -16,7 +17,7 @@ export interface ExoplanetData {
   providedIn: 'root',
 })
 export class ExoplanetsService {
-  private apiUrl = 'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CONFIRMED%27&format=json&select=kepid,kepler_name,koi_disposition,koi_period,koi_prad,ra,dec&order=koi_prad&limit=100';
+  private apiUrl = 'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CONFIRMED%27&format=json&select=kepid,kepler_name,koi_disposition,koi_smass,koi_period,koi_prad,ra,dec&order=koi_prad&limit=100';
 
   constructor(private http: HttpClient) { }
 

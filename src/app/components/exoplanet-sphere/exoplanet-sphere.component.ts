@@ -2,6 +2,8 @@ import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, HostListener }
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ExoplanetsService, ExoplanetData } from '../../servicios/exoplanets.service';
+import { ExoclickService } from '../../servicios/exoclick.service';
+
 
 @Component({
   selector: 'app-exoplanet-sphere',
@@ -20,7 +22,7 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
   private pointCloud!: THREE.Points;
   private tooltip!: HTMLElement;
 
-  constructor(private exoplanetsService: ExoplanetsService) { }
+  constructor(private exoplanetsService: ExoplanetsService, private exoclickService: ExoclickService) { }
 
   ngOnInit(): void {
     this.exoplanetsService.fetchData().subscribe((data) => {
@@ -86,6 +88,18 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   }
 
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event: MouseEvent): void {
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObject(this.pointCloud);
+    if (intersects.length > 0) {
+      const index = intersects[0].index!;
+      const exoplanet = this.exoplanetsData[index];
+      this.exoclickService.notifyExoplanetClicked(exoplanet);  // Solo se ejecutará al hacer clic
+    }
+  }
+
+
   private createScene(): void {
     const container = this.canvasContainer.nativeElement;
 
@@ -149,19 +163,11 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
   private detectIntersections(): void {
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObject(this.pointCloud);
-
     if (intersects.length > 0) {
       const index = intersects[0].index!;
       const exoplanet = this.exoplanetsData[index];
-
-      // Establece un umbral de distancia
-      const threshold = 6.0; // Aumenta este valor si necesitas más distancia
-
-      // Comprobamos si la distancia de intersección es menor que el umbral
-      if (intersects[0].distance < threshold) {
+      if (intersects[0].distance < 1000) {
         this.showTooltip(exoplanet, intersects[0].point);
-      } else {
-        this.tooltip.style.display = 'none';
       }
     } else {
       this.tooltip.style.display = 'none';
