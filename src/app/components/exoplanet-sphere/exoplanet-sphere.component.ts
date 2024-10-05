@@ -25,6 +25,7 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.exoplanetsService.fetchData().subscribe((data) => {
       this.exoplanetsData = data;
+      this.addExoplanetsToScene();
     });
 
     // Crear el tooltip y agregarlo al DOM
@@ -37,6 +38,34 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.tooltip.style.pointerEvents = 'none';
     this.tooltip.style.display = 'none';  // Inicialmente oculto
     document.body.appendChild(this.tooltip);
+  }
+
+  private addExoplanetsToScene(): void {
+    const geometry = new THREE.BufferGeometry();
+    const vertices: number[] = [];
+    const scale = 0.01; // Escala para convertir años luz a unidades visualizables en pantalla
+
+    this.exoplanetsData.forEach((exoplanet) => {
+      // Convertir RA y DEC a radianes
+      const ra = THREE.MathUtils.degToRad(exoplanet.ra);
+      const dec = THREE.MathUtils.degToRad(exoplanet.dec);
+
+      // Suponiendo que koi_period podría ser una aproximación de la distancia en años luz
+      const distance = exoplanet.koi_period * scale; // Aplicar la escala
+
+      // Calcular coordenadas cartesianas con variaciones aleatorias para crear formas irregulares
+      const x = distance * Math.cos(dec) * Math.cos(ra) + (Math.random() - 0.5) * 0.5; // Variación en x
+      const y = distance * Math.cos(dec) * Math.sin(ra) + (Math.random() - 0.5) * 0.5; // Variación en y
+      const z = distance * Math.sin(dec) + (Math.random() - 0.5) * 0.5; // Variación en z
+
+      vertices.push(x, y, z);
+    });
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+
+    const material = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
+    this.pointCloud = new THREE.Points(geometry, material);
+    this.scene.add(this.pointCloud);
   }
 
   ngAfterViewInit(): void {
@@ -73,12 +102,6 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.2;
     this.controls.enableZoom = true;
-
-    // Crear una malla de esfera transparente para visualizar la estructura
-    const sphereGeometry = new THREE.SphereGeometry(10, 32, 32);
-    const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0x444444, wireframe: true, transparent: true });
-    const wireframeSphere = new THREE.Mesh(sphereGeometry, wireframeMaterial);
-    this.scene.add(wireframeSphere);
   }
 
   private updateCanvasSize(): void {
@@ -89,12 +112,13 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
   }
 
   initThreeJS(): void {
-    const radius = 10;  // Radio de la esfera
+
+    const radius = 10;
     const geometry = new THREE.BufferGeometry();
     const vertices: number[] = [];
     for (let i = 0; i < 100; i++) {
       const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos((Math.random() * 2) - 1);  // Ángulo vertical
+      const phi = Math.acos((Math.random() * 2) - 1);
       const x = radius * Math.sin(phi) * Math.cos(theta);
       const y = radius * Math.sin(phi) * Math.sin(theta);
       const z = radius * Math.cos(phi);
@@ -115,6 +139,10 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
       this.renderer.render(this.scene, this.camera);
     };
 
+    const light = new THREE.PointLight(0xffffff, 1, 100);
+    light.position.set(0, 0, 10);
+    this.scene.add(light);
+
     animate();
   }
 
@@ -126,7 +154,15 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
       const index = intersects[0].index!;
       const exoplanet = this.exoplanetsData[index];
 
-      this.showTooltip(exoplanet, intersects[0].point);
+      // Establece un umbral de distancia
+      const threshold = 6.0; // Aumenta este valor si necesitas más distancia
+
+      // Comprobamos si la distancia de intersección es menor que el umbral
+      if (intersects[0].distance < threshold) {
+        this.showTooltip(exoplanet, intersects[0].point);
+      } else {
+        this.tooltip.style.display = 'none';
+      }
     } else {
       this.tooltip.style.display = 'none';
     }
