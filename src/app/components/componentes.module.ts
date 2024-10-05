@@ -4,6 +4,7 @@ import { ExoplanetsComponent } from './exoplanets/exoplanets.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { BarraBusquedaComponent } from "./barraBusqueda/barraBusqueda.component";
+import { SlideMenuComponent } from './slide-menu/slide-menu.component';
 
 import { ExoplanetSphereComponent } from './exoplanet-sphere/exoplanet-sphere.component';
 
@@ -11,7 +12,8 @@ import { ExoplanetSphereComponent } from './exoplanet-sphere/exoplanet-sphere.co
     declarations: [
         ExoplanetsComponent,
         ExoplanetSphereComponent,
-        BarraBusquedaComponent
+        BarraBusquedaComponent,
+        SlideMenuComponent
     ],
     imports: [
         CommonModule,
@@ -21,7 +23,8 @@ import { ExoplanetSphereComponent } from './exoplanet-sphere/exoplanet-sphere.co
   exports: [
     ExoplanetsComponent,
     BarraBusquedaComponent,
-    ExoplanetSphereComponent
+    ExoplanetSphereComponent,
+    SlideMenuComponent
   ]
 })
 export class ComponentsModule { }

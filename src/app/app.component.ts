@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ComponentsModule } from './components/componentes.module';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,
