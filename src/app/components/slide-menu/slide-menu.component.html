@@ -1,7 +1,7 @@
 <!--<button type="button" class="btn btn-primary" (click)="openModal()">
     Botoncito
   </button>-->
-  <div *ngIf="this.showMenu" class="all" id="all" (click)="closeModal()">
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" *ngIf="this.showMenu" [ngClass]="{'fade-out': !showMenu}" class="all" id="all" (click)="closeModal()">
     <div *ngIf="this.showMenu" class="see card" (click)="$event.stopPropagation()">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -10,11 +10,14 @@
             </div>
             <hr>
             <div class="modal-body">
-              <p>Nombre: {{ exoplanetName }}</p>
+              <p>Name: {{ exoplanetName }}</p>
               <p>Smass: {{ exosplanetSmass }}</p>
-              <p>Nombre: {{ exoplanetName }}</p>
-              <p>Nombre: {{ exoplanetName }}</p>
-              <p>Nombre: {{ exoplanetName }}</p>
+              <p>Transit Epoch in BJD: {{ exosplanetTime0 }}</p>
+              <p>Eccentricity: {{ exosplanetEccen }}</p>
+              <p>Long. of Periastron (deg): {{ exosplanetLongp }}</p>
+              <p>Impact Parameter: {{ exosplanetImpact }}</p>
+              <p>Transit Duration (hours): {{ exosplanetDuration }}</p>
+              <p>Transit Depth (parts per million): {{ exosplanetDepth }}</p>
             </div>
           </div>
         </div>
