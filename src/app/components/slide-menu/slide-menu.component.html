@@ -1,24 +1,26 @@
 <!--<button type="button" class="btn btn-primary" (click)="openModal()">
     Botoncito
   </button>-->
-  
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" #modal>
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Informacion de Planetas:</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>Nombre: {{ exoplanetName }}</p>
-          <p>Smass: {{ exosplanetSmass }}</p>
-          <p>Nombre: {{ exoplanetName }}</p>
-          <p>Nombre: {{ exoplanetName }}</p>
-          <p>Nombre: {{ exoplanetName }}</p>
+  <div *ngIf="this.showMenu" class="all" id="all" (click)="closeModal()">
+    <div *ngIf="this.showMenu" class="see card" (click)="$event.stopPropagation()">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Informacion de Planetas:</h1>
+            </div>
+            <hr>
+            <div class="modal-body">
+              <p>Nombre: {{ exoplanetName }}</p>
+              <p>Smass: {{ exosplanetSmass }}</p>
+              <p>Nombre: {{ exoplanetName }}</p>
+              <p>Nombre: {{ exoplanetName }}</p>
+              <p>Nombre: {{ exoplanetName }}</p>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
   </div>
+
 
 
   <!--
