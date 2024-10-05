@@ -22,3 +22,21 @@
 .form-inline:focus-within ~ .fa-search {
   opacity: 0; /* Esconder el ícono cuando el formulario está activo */
 }
+
+.navbar{
+  display: flex;
+  background-color: #044389;
+  width: 100%;
+}
+
+.logo-container{
+  margin-right: auto;
+}
+
+.logo{
+  max-width: 100%;
+  height: auto;
+  margin-left: 10px;
+  align-items: start;
+  border-radius: 5px;
+}
