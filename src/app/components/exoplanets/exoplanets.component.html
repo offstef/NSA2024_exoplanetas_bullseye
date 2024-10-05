@@ -1,10 +1,7 @@
 <div>
     <ul *ngIf="!loading && !error">
         <li *ngFor="let planet of data">
-            <p>Disposition: {{ planet.kepler_name }}</p>
-            <p>Disposition: {{ planet.koi_disposition }}</p>
-            <p>Period: {{ planet.koi_period }}</p>
-            <p>Planet Radius: {{ planet.koi_prad }}</p>
+            <p>{{ planet.kepid }}</p>
         </li>
     </ul>
 

@@ -3,28 +3,24 @@ import { CommonModule } from '@angular/common';
 import { ExoplanetsComponent } from './exoplanets/exoplanets.component';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import {BarraBusquedaComponent} from "./barraBusqueda/barraBusqueda.component";
+import { BarraBusquedaComponent } from "./barraBusqueda/barraBusqueda.component";
+
+import { ExoplanetSphereComponent } from './exoplanet-sphere/exoplanet-sphere.component';
 
 @NgModule({
     declarations: [
         ExoplanetsComponent,
-      BarraBusquedaComponent
-
-@NgModule({
-    declarations: [
-        ExoplanetsComponent
+        ExoplanetSphereComponent,
+        BarraBusquedaComponent
     ],
     imports: [
-        CommonModule
+        CommonModule,
+        HttpClientModule,
+        FormsModule
     ],
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    FormsModule
-  ],
     exports: [
         ExoplanetsComponent,
-      BarraBusquedaComponent
+        BarraBusquedaComponent
     ]
 })
 export class ComponentsModule { }

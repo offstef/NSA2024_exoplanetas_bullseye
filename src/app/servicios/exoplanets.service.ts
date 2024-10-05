@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface ExoplanetData {
+  kepid: number;
   kepler_name: string;
   koi_disposition: string;
   koi_period: number;
@@ -13,7 +14,7 @@ export interface ExoplanetData {
   providedIn: 'root',
 })
 export class ExoplanetsService {
-  private apiUrl = 'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CONFIRMED%27&format=json';
+  private apiUrl = 'https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=cumulative&where=koi_disposition%20like%20%27CONFIRMED%27&format=json&select=kepid,kepler_name,koi_disposition,koi_period,koi_prad&order=koi_prad&limit=100';
 
   constructor(private http: HttpClient) { }
 
