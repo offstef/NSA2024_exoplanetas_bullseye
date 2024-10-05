@@ -29,7 +29,11 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
       this.exoplanetsData = data;
       this.addExoplanetsToScene();
     });
-
+    this.exoplanetsService.selectedExoplanet$.subscribe(exoplanet => {
+      if (exoplanet){
+        this.moveCameraToExoplanet(exoplanet);
+      }
+    })
     // Crear el tooltip y agregarlo al DOM
     this.tooltip = document.createElement('div');
     this.tooltip.style.position = 'absolute';
@@ -70,15 +74,31 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.scene.add(this.pointCloud);
   }
 
+
+  private moveCameraToExoplanet(exoplanet: ExoplanetData): void {
+    const raInRadians = THREE.MathUtils.degToRad(exoplanet.ra);
+    const decInRadians = THREE.MathUtils.degToRad(exoplanet.dec);
+    const distance = exoplanet.koi_prad*0.01;
+
+    const x = distance * Math.cos(decInRadians) * Math.cos(raInRadians);
+    const y = distance * Math.cos(decInRadians) * Math.sin(raInRadians);
+    const z = distance * Math.sin(decInRadians);
+
+    // Mover la cámara
+    this.camera.position.set(x, y, z);
+    this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // Asegúrate de que la cámara mire hacia el origen
+    this.renderer.render(this.scene, this.camera);
+  }
+
   ngAfterViewInit(): void {
     this.createScene();
     this.initThreeJS();
   }
 
-  @HostListener('window:resize', ['$event'])
+  /*@HostListener('window:resize', ['$event'])
   onResize(): void {
     this.updateCanvasSize();
-  }
+  }*/
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
@@ -184,4 +204,12 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.tooltip.style.left = `${this.mouse.x * window.innerWidth / 2 + window.innerWidth / 2 + 10}px`;
     this.tooltip.style.top = `${-this.mouse.y * window.innerHeight / 2 + window.innerHeight / 2 + 10}px`;
   }
+  @HostListener('window:resize')
+  onResize(): void {
+    const container = this.canvasContainer.nativeElement; // Obtén el contenedor
+    this.renderer.setSize(container.clientWidth, container.clientHeight); // Ajusta el tamaño del renderizador
+    this.camera.aspect = container.clientWidth / container.clientHeight; // Actualiza la relación de aspecto
+    this.camera.updateProjectionMatrix(); // Actualiza la matriz de proyección de la cámara
+  }
+
 }
