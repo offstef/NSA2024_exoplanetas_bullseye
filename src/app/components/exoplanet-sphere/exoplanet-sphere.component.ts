@@ -21,6 +21,8 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
   private exoplanetsData: ExoplanetData[] = [];
   private pointCloud!: THREE.Points;
   private tooltip!: HTMLElement;
+  private cameraTarget!: THREE.Vector3; // Almacena la posición final del movimiento de la cámara
+  private moveSpeed: number = 0.05; // Velocidad del movimiento de la cámara
 
   constructor(private exoplanetsService: ExoplanetsService, private exoclickService: ExoclickService) { }
 
@@ -33,7 +35,8 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
       if (exoplanet){
         this.moveCameraToExoplanet(exoplanet);
       }
-    })
+    });
+
     // Crear el tooltip y agregarlo al DOM
     this.tooltip = document.createElement('div');
     this.tooltip.style.position = 'absolute';
@@ -52,17 +55,13 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     const scale = 0.01; // Escala para convertir años luz a unidades visualizables en pantalla
 
     this.exoplanetsData.forEach((exoplanet) => {
-      // Convertir RA y DEC a radianes
       const ra = THREE.MathUtils.degToRad(exoplanet.ra);
       const dec = THREE.MathUtils.degToRad(exoplanet.dec);
-
-      // Suponiendo que koi_period podría ser una aproximación de la distancia en años luz
       const distance = exoplanet.koi_period * scale; // Aplicar la escala
 
-      // Calcular coordenadas cartesianas con variaciones aleatorias para crear formas irregulares
-      const x = distance * Math.cos(dec) * Math.cos(ra) + (Math.random() - 0.5) * 0.5; // Variación en x
-      const y = distance * Math.cos(dec) * Math.sin(ra) + (Math.random() - 0.5) * 0.5; // Variación en y
-      const z = distance * Math.sin(dec) + (Math.random() - 0.5) * 0.5; // Variación en z
+      const x = distance * Math.cos(dec) * Math.cos(ra) + (Math.random() - 0.5) * 0.5;
+      const y = distance * Math.cos(dec) * Math.sin(ra) + (Math.random() - 0.5) * 0.5;
+      const z = distance * Math.sin(dec) + (Math.random() - 0.5) * 0.5;
 
       vertices.push(x, y, z);
     });
@@ -74,35 +73,41 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.scene.add(this.pointCloud);
   }
 
-
   private moveCameraToExoplanet(exoplanet: ExoplanetData): void {
     const raInRadians = THREE.MathUtils.degToRad(exoplanet.ra);
     const decInRadians = THREE.MathUtils.degToRad(exoplanet.dec);
-    const distance = exoplanet.koi_prad*0.01;
+    const distance = exoplanet.koi_prad * 0.01; // Escala el radio
 
     const x = distance * Math.cos(decInRadians) * Math.cos(raInRadians);
     const y = distance * Math.cos(decInRadians) * Math.sin(raInRadians);
     const z = distance * Math.sin(decInRadians);
 
-    // Mover la cámara
-    this.camera.position.set(x, y, z);
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // Asegúrate de que la cámara mire hacia el origen
-    this.renderer.render(this.scene, this.camera);
+    this.cameraTarget = new THREE.Vector3(x, y, z); // Definimos el objetivo de la cámara
   }
 
   ngAfterViewInit(): void {
     this.createScene();
     this.initThreeJS();
-  }
 
-  /*@HostListener('window:resize', ['$event'])
-  onResize(): void {
-    this.updateCanvasSize();
-  }*/
+    const animate = () => {
+      requestAnimationFrame(animate);
+      this.controls.update();
+
+      // Movimiento suave de la cámara hacia el objetivo
+      if (this.cameraTarget) {
+        this.camera.position.lerp(this.cameraTarget, this.moveSpeed); // Interpolación suave
+        this.camera.lookAt(new THREE.Vector3(0, 0, 0)); // Mantiene la cámara enfocada en el origen
+      }
+
+      this.detectIntersections();
+      this.renderer.render(this.scene, this.camera);
+    };
+
+    animate();
+  }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
-    // Actualiza las coordenadas del ratón
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -115,10 +120,9 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     if (intersects.length > 0) {
       const index = intersects[0].index!;
       const exoplanet = this.exoplanetsData[index];
-      this.exoclickService.notifyExoplanetClicked(exoplanet);  // Solo se ejecutará al hacer clic
+      this.exoclickService.notifyExoplanetClicked(exoplanet); // Notifica cuando se hace clic en un exoplaneta
     }
   }
-
 
   private createScene(): void {
     const container = this.canvasContainer.nativeElement;
@@ -146,7 +150,6 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
   }
 
   initThreeJS(): void {
-
     const radius = 10;
     const geometry = new THREE.BufferGeometry();
     const vertices: number[] = [];
@@ -204,12 +207,13 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     this.tooltip.style.left = `${this.mouse.x * window.innerWidth / 2 + window.innerWidth / 2 + 10}px`;
     this.tooltip.style.top = `${-this.mouse.y * window.innerHeight / 2 + window.innerHeight / 2 + 10}px`;
   }
+
   @HostListener('window:resize')
   onResize(): void {
-    const container = this.canvasContainer.nativeElement; // Obtén el contenedor
-    this.renderer.setSize(container.clientWidth, container.clientHeight); // Ajusta el tamaño del renderizador
-    this.camera.aspect = container.clientWidth / container.clientHeight; // Actualiza la relación de aspecto
-    this.camera.updateProjectionMatrix(); // Actualiza la matriz de proyección de la cámara
+    const container = this.canvasContainer.nativeElement;
+    this.renderer.setSize(container.clientWidth, container.clientHeight);
+    this.camera.aspect = container.clientWidth / container.clientHeight;
+    this.camera.updateProjectionMatrix();
   }
 
 }
