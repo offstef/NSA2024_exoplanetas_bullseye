@@ -32,7 +32,7 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
       this.addExoplanetsToScene();
     });
     this.exoplanetsService.selectedExoplanet$.subscribe(exoplanet => {
-      if (exoplanet){
+      if (exoplanet) {
         this.moveCameraToExoplanet(exoplanet);
       }
     });
@@ -54,6 +54,9 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     const vertices: number[] = [];
     const scale = 0.01; // Escala para convertir años luz a unidades visualizables en pantalla
 
+    // Crear un array para almacenar las posiciones de los exoplanetas
+    const positions: THREE.Vector3[] = [];
+
     this.exoplanetsData.forEach((exoplanet) => {
       const ra = THREE.MathUtils.degToRad(exoplanet.ra);
       const dec = THREE.MathUtils.degToRad(exoplanet.dec);
@@ -64,6 +67,7 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
       const z = distance * Math.sin(dec) + (Math.random() - 0.5) * 0.5;
 
       vertices.push(x, y, z);
+      positions.push(new THREE.Vector3(x, y, z)); // Almacena las posiciones
     });
 
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
@@ -71,7 +75,37 @@ export class ExoplanetSphereComponent implements OnInit, AfterViewInit {
     const material = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
     this.pointCloud = new THREE.Points(geometry, material);
     this.scene.add(this.pointCloud);
+
+    // Crear líneas entre los exoplanetas más cercanos
+    this.createConnections(positions);
   }
+
+  private createConnections(positions: THREE.Vector3[]): void {
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 }); // Color rojo brillante
+    const thresholdDistance = 1.0; // Distancia máxima para conectar dos puntos
+    const linesGeometry = new THREE.BufferGeometry();
+
+    const lineVertices: number[] = [];
+
+    // Comparar cada par de puntos para ver si están dentro de la distancia
+    for (let i = 0; i < positions.length; i++) {
+      for (let j = i + 1; j < positions.length; j++) {
+        const distance = positions[i].distanceTo(positions[j]);
+        if (distance < thresholdDistance) {
+          lineVertices.push(positions[i].x, positions[i].y, positions[i].z);
+          lineVertices.push(positions[j].x, positions[j].y, positions[j].z);
+        }
+      }
+    }
+
+    // Solo agregar las líneas si hay puntos que conectan
+    if (lineVertices.length > 0) {
+      linesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(lineVertices, 3));
+      const lines = new THREE.LineSegments(linesGeometry, lineMaterial);
+      this.scene.add(lines);
+    }
+  }
+
 
   private moveCameraToExoplanet(exoplanet: ExoplanetData): void {
     const raInRadians = THREE.MathUtils.degToRad(exoplanet.ra);

@@ -1,32 +1,32 @@
 <!--<button type="button" class="btn btn-primary" (click)="openModal()">
     Botoncito
   </button>-->
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" *ngIf="this.showMenu" [ngClass]="{'fade-out': !showMenu}" class="all" id="all" (click)="closeModal()">
-    <div *ngIf="this.showMenu" class="see card" (click)="$event.stopPropagation()">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Informacion de Planetas:</h1>
-            </div>
-            <hr>
-            <div class="modal-body">
-              <p>Name: {{ exoplanetName }}</p>
-              <p>Smass: {{ exosplanetSmass }}</p>
-              <p>Transit Epoch in BJD: {{ exosplanetTime0 }}</p>
-              <p>Eccentricity: {{ exosplanetEccen }}</p>
-              <p>Long. of Periastron (deg): {{ exosplanetLongp }}</p>
-              <p>Impact Parameter: {{ exosplanetImpact }}</p>
-              <p>Transit Duration (hours): {{ exosplanetDuration }}</p>
-              <p>Transit Depth (parts per million): {{ exosplanetDepth }}</p>
-            </div>
-          </div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" *ngIf="this.showMenu"
+  [ngClass]="{'fade-out': !showMenu}" class="all" id="all" (click)="closeModal()">
+  <div *ngIf="this.showMenu" class="see card" (click)="$event.stopPropagation()">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Informacion de {{ exoplanetName }}</h1>
+        </div>
+        <hr>
+        <div class="modal-body">
+          <p>Mass: {{ exosplanetSmass }}</p>
+          <p>Transit Epoch in BJD: {{ exosplanetTime0 }}</p>
+          <p>Eccentricity: {{ exosplanetEccen }}</p>
+          <p>Long. of Periastron (deg): {{ exosplanetLongp }}</p>
+          <p>Impact Parameter: {{ exosplanetImpact }}</p>
+          <p>Transit Duration (hours): {{ exosplanetDuration }}</p>
+          <p>Transit Depth (parts per million): {{ exosplanetDepth }}</p>
         </div>
       </div>
+    </div>
   </div>
+</div>
 
 
 
-  <!--
+<!--
   
   <button type="button" class="btn btn-primary" (click)="openModal()">
     Botoncito :)
