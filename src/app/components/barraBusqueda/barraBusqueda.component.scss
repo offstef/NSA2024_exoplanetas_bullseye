@@ -1,0 +1,24 @@
+.search-container {
+  display: flex; /* Usar flexbox para organizar los elementos en línea */
+  align-items: center; /* Centrar los elementos verticalmente */
+  margin-left: auto; /* Mueve el contenido hacia la derecha */
+  margin-right: 10px; /* Espacio en la derecha, ajustable a tu preferencia */
+  position: relative; /* Necesario para posicionar los elementos hijos correctamente */
+}
+
+.form-inline {
+  display: flex; /* Asegúrate de que el formulario también use flexbox */
+  align-items: center; /* Centrar los elementos verticalmente dentro del formulario */
+  position: relative; /* Necesario para el z-index */
+  z-index: 1; /* Elevar el formulario sobre el ícono */
+}
+
+.fa-search {
+  z-index: 0; /* Asegura que la lupa esté detrás del formulario */
+  transition: opacity 0.3s ease; /* Transición suave para la visibilidad */
+  opacity: 1; /* Opacidad inicial */
+}
+
+.form-inline:focus-within ~ .fa-search {
+  opacity: 0; /* Esconder el ícono cuando el formulario está activo */
+}
